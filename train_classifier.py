@@ -74,13 +74,19 @@ def build_model(grid_search_cv=False):
     :return:
     pipeline: pipeline that process the text data
     """
+    # pipeline = Pipeline([
+    #     ('features', FeatureUnion([
+    #         ('text_pipeline', Pipeline([
+    #             ('vect', CountVectorizer(tokenizer=tokenize)),
+    #             ('tfidf', TfidfTransformer())])),
+    #         ('starting_verb', StartingVerbExtractor())])),
+    #     ('clf', MultiOutputClassifier(AdaBoostClassifier()))])
+
     pipeline = Pipeline([
-        ('features', FeatureUnion([
-            ('text_pipeline', Pipeline([
-                ('vect', CountVectorizer(tokenizer=tokenize)),
-                ('tfidf', TfidfTransformer())])),
-            ('starting_verb', StartingVerbExtractor())])),
-        ('clf', MultiOutputClassifier(AdaBoostClassifier()))])
+        ('countvectorizer', CountVectorizer(tokenizer=tokenize)),
+        ('tfidftransformer', TfidfTransformer()),
+        ('clf', MultiOutputClassifier(AdaBoostClassifier(), n_jobs=1))
+    ])
 
     parameters = {'clf__estimator__n_estimators': [50, 100, 150]
                   }
